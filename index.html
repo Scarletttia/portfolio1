@@ -1,0 +1,587 @@
+<title>Portfolio Template</title>
+<style>
+  /*
+    Layout concept: an asymmetric single column with a sticky left-aligned
+    index rail on wide screens (section labels, not decoration — this is a
+    build log, so the rail numbers the sections like a changelog) that
+    collapses to a top bar on phones. Content reads top to bottom in one
+    column; nothing is centered.
+  */
+  :root {
+    --bg: #f6f6f3;
+    --surface: #ffffff;
+    --fg: #15202a;
+    --muted: #5b6670;
+    --accent: #1f6f5c;
+    --accent-fg: #ffffff;
+    --accent-soft: #e2ede9;
+    --line: #dcdfd9;
+    --mono-chip: #eef1ee;
+    --code-green: #1f6f5c;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151a;
+      --surface: #161d23;
+      --fg: #e9edef;
+      --muted: #94a1a6;
+      --accent: #57bda0;
+      --accent-fg: #0a1210;
+      --accent-soft: #1b2b27;
+      --line: #263036;
+      --mono-chip: #1d252b;
+      --code-green: #6fd0b4;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #10151a;
+    --surface: #161d23;
+    --fg: #e9edef;
+    --muted: #94a1a6;
+    --accent: #57bda0;
+    --accent-fg: #0a1210;
+    --accent-soft: #1b2b27;
+    --line: #263036;
+    --mono-chip: #1d252b;
+    --code-green: #6fd0b4;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  h1, h2, h3 {
+    font-family: "Fraunces", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  a { color: var(--accent); }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding-inline: 20px;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topbar-inner {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .topbar .mark {
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+
+  .topbar .mark span { color: var(--accent); }
+
+  nav.links {
+    display: flex;
+    gap: 18px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+  }
+
+  nav.links a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+
+  nav.links a:hover { color: var(--fg); border-color: var(--accent); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding-block: 64px 48px;
+  }
+
+  .hero .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 5vw, 3.3rem);
+    letter-spacing: -0.015em;
+    max-width: 14ch;
+  }
+
+  .hero .role {
+    margin-top: 10px;
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 48ch;
+  }
+
+  .hero .bio {
+    margin-top: 22px;
+    max-width: 62ch;
+    color: var(--fg);
+  }
+
+  .cta-row {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 3px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--line);
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+
+  .btn.primary {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border-color: var(--accent);
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--fg);
+  }
+
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { padding-block: 44px; border-top: 1px solid var(--line); }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-head .num {
+    font-family: "IBM Plex Mono", monospace;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .section-head h2 {
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- skills ---------- */
+  .skill-group { margin-bottom: 20px; }
+
+  .skill-group h3 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+    background: var(--mono-chip);
+    border: 1px solid var(--line);
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: var(--fg);
+  }
+
+  /* ---------- projects ---------- */
+  .project {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    margin-bottom: 18px;
+  }
+
+  .project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .project h3 {
+    font-size: 1.15rem;
+    font-family: "Fraunces", serif;
+  }
+
+  .project .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .project p { margin: 0; color: var(--muted); max-width: 70ch; }
+
+  .project .stack {
+    margin-top: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--code-green);
+  }
+
+  .project .links {
+    margin-top: 6px;
+    display: flex;
+    gap: 14px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+  }
+
+  /* ---------- timeline ---------- */
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    padding-block: 14px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .timeline-item:last-child { border-bottom: none; }
+
+  .timeline-item .when {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding-top: 3px;
+  }
+
+  .timeline-item h3 { font-size: 1rem; font-family: "IBM Plex Sans", sans-serif; font-weight: 600; }
+  .timeline-item p { margin: 4px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+  /* ---------- contact ---------- */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .contact-card .label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+
+  .contact-card .value {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    align-self: flex-start;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: none;
+    padding: 4px 9px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .copy-btn:hover { background: var(--accent); color: var(--accent-fg); }
+
+  footer {
+    padding-block: 28px 48px;
+    text-align: left;
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+  }
+
+  .edit-note {
+    background: var(--accent-soft);
+    border: 1px dashed var(--accent);
+    color: var(--fg);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    margin-bottom: 36px;
+  }
+
+  .edit-note b { color: var(--accent); }
+
+  @media (max-width: 560px) {
+    nav.links { display: none; }
+    .timeline-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="mark">[Your Name]<span>.</span></div>
+    <nav class="links">
+      <a href="#about">about</a>
+      <a href="#skills">skills</a>
+      <a href="#projects">projects</a>
+      <a href="#timeline">timeline</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero" id="top" style="border-top:none;">
+    <div class="edit-note">
+      <b>How to use this template:</b> every bracketed placeholder like <span class="mono">[Your Name]</span> is meant to be replaced with your own content. The Volunteer Resource Matcher project card is filled in as a real example — copy its structure for your other projects, then delete this note.
+    </div>
+    <div class="eyebrow">// software engineer, class of [2027]</div>
+    <h1>[Your Name]</h1>
+    <p class="role">[Your course] student who builds practical tools rather than just studying them — currently applying skills and algorithms to problems that affect real organizations.</p>
+    <p class="bio">[2–3 sentences: who you are, what you're curious about, and what kind of engineering problems you enjoy. Mention your university, your year, and one thing that makes you specifically interesting — a project, a club, a side interest.]</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#projects">View projects</a>
+      <a class="btn ghost" href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn ghost" href="#contact">Contact</a>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <span class="num mono">01</span>
+      <h2>About</h2>
+    </div>
+    <p style="max-width:68ch;">[Expand on your background here — your degree, expected graduation date, and what draws you to software engineering, particularly in a social-impact or finance-adjacent context if relevant to this application. Two short paragraphs is plenty; this section should read like you, not like a CV summary.]</p>
+  </section>
+
+  <section id="skills">
+    <div class="section-head">
+      <span class="num mono">02</span>
+      <h2>Skills</h2>
+    </div>
+
+    <div class="skill-group">
+      <h3>Languages</h3>
+      <div class="chips">
+        <span class="chip">Python</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">Java</span>
+        <span class="chip">[+ yours]</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h3>Frameworks &amp; tools</h3>
+      <div class="chips">
+        <span class="chip">FastAPI</span>
+        <span class="chip">React</span>
+        <span class="chip">SQL</span>
+        <span class="chip">Git</span>
+        <span class="chip">[+ yours]</span>
+      </div>
+    </div>
+
+    <div class="skill-group">
+      <h3>Concepts</h3>
+      <div class="chips">
+        <span class="chip">Data structures &amp; algorithms</span>
+        <span class="chip">Relational DB design</span>
+        <span class="chip">CI/CD</span>
+        <span class="chip">[+ yours]</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head">
+      <span class="num mono">03</span>
+      <h2>Projects</h2>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>Volunteer Resource Matcher</h3>
+        <span class="tag">featured</span>
+      </div>
+      <p>A full-stack app that matches volunteers to nonprofit needs using a weighted, explainable scoring algorithm (skill overlap, location, urgency) rather than a black box — so a nonprofit reviewer can see why a match was suggested.</p>
+      <div class="stack">Python · FastAPI · SQLAlchemy · PostgreSQL-ready · pytest · GitHub Actions CI</div>
+      <div class="links">
+        <a href="https://github.com/yourusername/volunteer-matcher" target="_blank" rel="noopener">Repository ↗</a>
+        <a href="#" target="_blank" rel="noopener">Live demo ↗</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>[Second project name]</h3>
+        <span class="tag">[tag]</span>
+      </div>
+      <p>[One or two sentences: what it does and what problem it solves. Say what you specifically built if it was a team project.]</p>
+      <div class="stack">[Language] · [Framework] · [Tool]</div>
+      <div class="links">
+        <a href="#" target="_blank" rel="noopener">Repository ↗</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-top">
+        <h3>[Third project name]</h3>
+        <span class="tag">[tag]</span>
+      </div>
+      <p>[One or two sentences on this project. Three strong, finished projects read better than six unfinished ones — cut this card if you don't have a third yet.]</p>
+      <div class="stack">[Language] · [Framework] · [Tool]</div>
+      <div class="links">
+        <a href="#" target="_blank" rel="noopener">Repository ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <div class="section-head">
+      <span class="num mono">04</span>
+      <h2>Education &amp; experience</h2>
+    </div>
+
+    <div class="timeline-item">
+      <div class="when mono">2024 — 2028</div>
+      <div>
+        <h3>[University name]</h3>
+        <p>[Degree title], expected graduation [month/year]</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="when mono">[dates]</div>
+      <div>
+        <h3>[Role / club / internship]</h3>
+        <p>[What you did, in one line.]</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-head">
+      <span class="num mono">05</span>
+      <h2>Contact</h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <span class="label">Email</span>
+        <span class="value" id="email-value">you@example.com</span>
+        <button class="copy-btn" data-copy-target="email-value">Copy</button>
+      </div>
+      <div class="contact-card">
+        <span class="label">GitHub</span>
+        <span class="value" id="gh-value">github.com/yourusername</span>
+        <button class="copy-btn" data-copy-target="gh-value">Copy</button>
+      </div>
+      <div class="contact-card">
+        <span class="label">LinkedIn</span>
+        <span class="value" id="li-value">linkedin.com/in/yourname</span>
+        <button class="copy-btn" data-copy-target="li-value">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    [Your Name] — built for the JPMorganChase Code for Good application, [2026]
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = document.getElementById(btn.dataset.copyTarget);
+      var text = target ? target.textContent.trim() : '';
+      var done = function () {
+        var original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = original; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          selectText(target);
+        });
+      } else {
+        selectText(target);
+      }
+    });
+  });
+
+  function selectText(el) {
+    if (!el) return;
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+</script>
